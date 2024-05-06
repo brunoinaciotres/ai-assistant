@@ -1,0 +1,1 @@
+export const entrega = "Centro (R$2,00), São Mateus (R$10,00), São Pedro (R$15,00), Paineiras (R$10,00)"
