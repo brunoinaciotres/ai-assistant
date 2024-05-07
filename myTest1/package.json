@@ -4,7 +4,7 @@
   "description": "",
   "main": "1-primeiro-encontro/index.js",
   "scripts": {
-    "myTest": "node my-tests/chat2.js",
+    "myTest": "node my-tests/main.js",
     "start": "node 1-primeiro-encontro/helloCompletion.js",
     "chatCompletion": "node 1-primeiro-encontro/chatCompletion.js",
     "chatSpecializedCompletion": "node 1-primeiro-encontro/chatSpecializedCompletion.js",
