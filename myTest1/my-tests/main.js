@@ -8,8 +8,8 @@ async function main() {
 
     if (userOption == 'pedido') {
         const order = await fn.takeOrder()
-        console.log("order -> " + order)
-        const adress = fn.takeAdress(order)
+        const adress = await fn.takeAdress(order)
+        fn.finishUserOrder(order,adress)
     }
 }
 

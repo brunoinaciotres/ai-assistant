@@ -54,7 +54,7 @@ async function getUserOption() {
 
 }
 async function takeOrder() {
-    console.log("chamando takeOrder()")
+    console.log('\x1b[34m%s\x1b[0m', "Chamando ---> takeOrder()")
     const tools = [
         {
             "type": "function",
@@ -99,7 +99,7 @@ async function takeOrder() {
     }]
 
     while (true) {
-        console.log("chamando modelo: " + model)
+
 
         const completion = await openai.chat.completions.create({
             messages,
@@ -117,7 +117,7 @@ async function takeOrder() {
 
             if (fn == 'getUserOrder') {
                 const order = await getUserOrder(args)
-
+                console.log('\x1b[32m%s\x1b[0m', "Pedido retirado ---> " + JSON.stringify(order))
                 return order
             }
 
@@ -142,6 +142,7 @@ async function takeOrder() {
 
 }
 async function takeAdress(order) {
+    console.log('\x1b[34m%s\x1b[0m', "Chamando ---> takeAdress()")
     let model = "gpt-4-turbo-preview"
 
     const tools = [
@@ -178,7 +179,8 @@ async function takeAdress(order) {
             + "O usuário já estava falando com você antes, não precisa de dizer olá"
             + "O usuário já fez esse pedido: " + JSON.stringify(order)
             + "Não responder nada que não tenha relação com a Padaria"
-            + "Perguntar qual a rua, o numero, o bairro e um ponto de referência"
+            + "Perguntar qual a rua, o numero, complemento, o bairro e um ponto de referência"
+            + "O ponto de referência é opcional"
     }]
 
     while (true) {
@@ -193,9 +195,9 @@ async function takeAdress(order) {
         if (completion.choices[0].message.tool_calls) {
 
             const args = JSON.parse(completion.choices[0].message.tool_calls[0].function.arguments)
-            const fn = completion.choices[0].message.tool_calls[0].function.name
-
-            getUserAdress(args)
+            const adress = await getUserAdress(args)
+            console.log('\x1b[32m%s\x1b[0m', "Endereço Retirado ---> " + JSON.stringify(adress))
+            return adress
         }
 
         const modelResponse = completion.choices[0].message.content
@@ -211,6 +213,47 @@ async function takeAdress(order) {
     }
 }
 
+async function finishUserOrder(order, adress){
+    console.log('\x1b[34m%s\x1b[0m', "Chamando ---> finishUserOrder()")
+    let model = "gpt-4-turbo-preview"
+
+    let messages = [{
+        role: "system",
+        content: "Você é um atendente educado do delivery da Padaria Modelo"
+            + "Sua missão é finalizar o pedido do usuário informando um resumo do pedido"
+            + "O usuário já estava falando com você antes"
+            + "O usuário já fez esse pedido: " + JSON.stringify(order)
+            + "O usuário já informou esse endereço de entrega: " + JSON.stringify(adress)
+            + "Não responder nada que não tenha relação com a Padaria"
+            + "Gerar um resumo do pedido com os dados: produtos e preços "
+            + "O preço de entrega é em relação ao bairro, esta é a lista: " + entrega
+            + "Cardápio de produtos com os preços: " + data
+    }]
+
+    while (true) {
+
+        const completion = await openai.chat.completions.create({
+            messages,
+            model,
+            temperature: 0.4,
+        })
+
+        const modelResponse = completion.choices[0].message.content
+
+        messages.push({ role: "assistant", content: modelResponse })
+        console.log(modelResponse)
+        const userInput = await promptMessage("Mensagem>")
+
+        messages.push({
+            role: "user",
+            content: userInput
+        })
+
+    }
+
+
+}
+
 
 // TOOLS Functions
 async function getUserOrder(products) {
@@ -219,13 +262,14 @@ async function getUserOrder(products) {
 }
 
 async function getUserAdress(adress){
-    console.log("ENDEREÇO -> " + JSON.stringify(adress))
+    return adress
 }
 
 export const fn = {
     getUserOption,
     takeOrder,
-    takeAdress
+    takeAdress,
+    finishUserOrder
 }
 
 
