@@ -1,58 +1,14 @@
-import { promptMessage } from "../utils/prompt.js";
+import { promptMessage } from "../../utils/prompt.js";
 import OpenAi from "openai";
 import dotenv from "dotenv"
-import { data } from "./data.js";
-import { entrega } from "./entrega.js";
+import { menu } from "../data/menu.js";
+import { entrega } from "../data/entrega.js";
 
 dotenv.config()
 
 const openai = new OpenAi({ apiKey: process.env.OPENAI_API_KEY })
-const groq = new OpenAi({ baseURL: " https://api.groq.com/openai/v1", apiKey: process.env.GROQ_API_KEY })
 
 
-
-async function getUserOption() {
-    const model = "llama3-8b-8192"
-
-    let messages = [
-        {
-            role: "system",
-            content: "Você é um atendente de delivery da Padaria Modelo."
-                + "Você deve dizer ao usuário somente essa frase: 'Escolha uma das opções para prosseguirmos (digite o número da opção desejada): \n 1 - Fazer pedido de delivery, \n 2 - Fazer encomenda, \n 3 - Informações'"
-                + "Você só sabe o que o usuário quer se ele responder o número 1, número 2, ou número 3"
-                + "Se ele escolher (1), retorne um JSON no formato {\"option\":\"pedido\"}"
-                + "Se ele escolher (2), retorne um JSON no formato {\"option\":\"encomenda\"}"
-                + "Se ele escolher (3), retorne um JSON no formato {\"option\":\"info\"}"
-                + "Não retornar nada além do JSON após a escolha"
-        }
-    ];
-
-    while (true) {
-        const userInput = await promptMessage("Mensagem>");
-
-        messages.push({ role: "user", content: userInput })
-
-        const completion = await groq.chat.completions.create({
-            messages,
-            model,
-            temperature: .4
-        });
-
-        try {
-            const modelResponse = completion.choices[0].message.content
-            const modelResponseObj = JSON.parse(modelResponse)
-            console.log("opcao escolhida :" + JSON.stringify(modelResponseObj))
-            return modelResponseObj.option
-        } catch (e) {
-            const modelResponse = completion.choices[0].message.content
-            console.log(modelResponse)
-        }
-
-    }
-
-
-
-}
 async function takeOrder() {
     console.log('\x1b[34m%s\x1b[0m', "Chamando ---> takeOrder()")
     const tools = [
@@ -89,12 +45,12 @@ async function takeOrder() {
             + "Sua missão é recolher o pedido do usuário"
             + "Não responder nada que não tenha relação com a Padaria"
             + "Não oferecer ou adicionar pedidos que estão fora do cardápio"
-            + "Este é o cardápio disponível: " + data
+            + "Este é o cardápio disponível: " + menu
             + "Não enviar o cardápio sem ser solicitado pelo usuário"
-            + "Quando o usuário fechar o pedido, envie o pedido formatado em lista para confirmação do usuário"
-            + "Você segue estas regras: Para pedidos com mais de 10 unidades, diga que irá verificar a disponibilidade e peça para o cliente aguardar um momento"
+            + "Não fechar pedidos acima de 10 unidades. Dizer que vai Verificar disponibilidade antes e pedir para aguardar"
             + "Verificar se o usuário deseja mais um produto antes de fechar o pedido"
-
+            + "Quando o usuário fechar o pedido, envie o pedido formatado em lista para confirmação do usuário"
+            
 
     }]
 
@@ -227,7 +183,7 @@ async function finishUserOrder(order, adress){
             + "Não responder nada que não tenha relação com a Padaria"
             + "Gerar um resumo do pedido com os dados: produtos e preços "
             + "O preço de entrega é em relação ao bairro, esta é a lista: " + entrega
-            + "Cardápio de produtos com os preços: " + data
+            + "Cardápio de produtos com os preços: " + menu
     }]
 
     while (true) {
@@ -265,8 +221,7 @@ async function getUserAdress(adress){
     return adress
 }
 
-export const fn = {
-    getUserOption,
+export const makeOrder = {
     takeOrder,
     takeAdress,
     finishUserOrder
