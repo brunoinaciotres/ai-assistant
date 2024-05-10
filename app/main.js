@@ -1,7 +1,8 @@
 import dotenv from "dotenv"
 import OpenAi from "openai";
 import { promptMessage } from "../utils/prompt.js";
-import {makeOrder} from './functions/optionOrderFunctions.js'
+import {MakeOrder} from './functions/optionOrderFunctions.js'
+import {Info} from './functions/optionInfoFunctions.js'
 dotenv.config()
 
 const groq = new OpenAi({ baseURL: " https://api.groq.com/openai/v1", apiKey: process.env.GROQ_API_KEY })
@@ -10,11 +11,12 @@ async function main() {
     const userOption = await getUserOption()
 
     if (userOption == 'pedido') {
-        const order = await makeOrder.takeOrder()
-        const adress = await makeOrder.takeAdress(order)
-        makeOrder.finishUserOrder(order,adress)
+        const order = await MakeOrder.takeOrder()
+        const adress = await MakeOrder.takeAdress(order)
+        MakeOrder.finishUserOrder(order,adress)
     } else if (userOption == 'info'){
         console.log("cai aq")
+        Info.getInfo()
     }
 }
 

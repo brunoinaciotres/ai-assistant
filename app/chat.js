@@ -9,7 +9,7 @@ const openai = new OpenAi({ apiKey: process.env.OPENAI_API_KEY })
 const groq = new OpenAi({baseURL: " https://api.groq.com/openai/v1", apiKey: process.env.GROQ_API_KEY })
 
 async function main() {
-    //const model = "gpt-4-0125-preview"
+
     const model = "llama3-8b-8192"
 
     const tools = [

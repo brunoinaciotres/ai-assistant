@@ -221,7 +221,7 @@ async function getUserAdress(adress){
     return adress
 }
 
-export const makeOrder = {
+export const MakeOrder = {
     takeOrder,
     takeAdress,
     finishUserOrder
