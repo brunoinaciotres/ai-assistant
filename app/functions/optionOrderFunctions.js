@@ -43,13 +43,15 @@ async function takeOrder() {
         role: "system",
         content: "Você é um atendente educado do delivery da Padaria Modelo"
             + "Sua missão é recolher o pedido do usuário"
+            +"Um chamado de pedido foi aberto"
             + "Não responder nada que não tenha relação com a Padaria"
             + "Não oferecer ou adicionar pedidos que estão fora do cardápio"
             + "Este é o cardápio disponível: " + menu
             + "Não enviar o cardápio sem ser solicitado pelo usuário"
             + "Não fechar pedidos acima de 10 unidades. Dizer que vai Verificar disponibilidade antes e pedir para aguardar"
             + "Verificar se o usuário deseja mais um produto antes de fechar o pedido"
-            + "Quando o usuário fechar o pedido, envie o pedido formatado em lista para confirmação do usuário"
+            + "Quando o usuário fechar o pedido, envie o pedido formatado em lista para confirmação dos produtos ao usuário"
+            + "Não encerrar o chamado antes de coletar o endereço"
             
 
     }]
@@ -106,7 +108,7 @@ async function takeAdress(order) {
             "type": "function",
             "function": {
                 "name": "getUserAdress",
-                "description": "pega o endereço fornecido pelo usuário",
+                "description": "pega o endereço fornecido pelo usuário após confirmação",
                 "parameters": {
                     "type": "object",
                     "properties": {
@@ -137,6 +139,8 @@ async function takeAdress(order) {
             + "Não responder nada que não tenha relação com a Padaria"
             + "Perguntar qual a rua, o numero, complemento, o bairro e um ponto de referência"
             + "O ponto de referência é opcional"
+            + "Se a pessoa não informar complemento ou ponto de referência, não pergunte se há algum"
+            + "Você deve confirmar o endereço com o usuário"
     }]
 
     while (true) {
@@ -184,6 +188,8 @@ async function finishUserOrder(order, adress){
             + "Gerar um resumo do pedido com os dados: produtos e preços "
             + "O preço de entrega é em relação ao bairro, esta é a lista: " + entrega
             + "Cardápio de produtos com os preços: " + menu
+            + "Antes de finalizar o pedido, você pedir qual o método de pagamento, podendo ser cartão, dinheiro ou pix"
+            + "Se o usuário escolher método de pagamento dinheiro, você deve perguntar se precisa de troco e para quanto"
     }]
 
     while (true) {

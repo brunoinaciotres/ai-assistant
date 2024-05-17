@@ -3,6 +3,7 @@ import OpenAi from "openai";
 import dotenv from "dotenv"
 import { menu } from "../data/menu.js";
 import { entrega } from "../data/entrega.js";
+import { MakeOrder } from "./optionOrderFunctions.js";
 
 dotenv.config()
 
@@ -19,7 +20,7 @@ async function getInfo(){
             "type": "function",
             "function": {
                 "name": "fazerPedido",
-                "description": "inicia processo de fazer pedido para o usuário quando solicitado",
+                "description": "Realoca usuário para fazer um pedido quando solicitado",
             }
         }
     ]
@@ -27,8 +28,9 @@ async function getInfo(){
 
     let messages = [{
         role: "system",
-        content: "Você é um atendente educado do delivery da Padaria Modelo"
+        content: "Você é um atendente educado que fornece informações da Padaria Modelo"
             + "Hoje é:" + JSON.stringify(Date.now())
+            + "Se o usuário disser que quer realizar um pedido, você deve realocá-lo chamando uma função"
             + "Sua missão é somente fornecer informações sobre o negócio da padaria"
             + "Não responder nada que não tenha relação com a Padaria"
             + "Este é o cardápio " + menu
@@ -61,7 +63,7 @@ async function getInfo(){
 
         if (completion.choices[0].message.tool_calls){
             console.log("inciiar pedido")
-            return
+            MakeOrder.takeOrder()
         }
 
         const modelResponse = completion.choices[0].message.content
